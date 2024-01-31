@@ -12,7 +12,7 @@ Registrar os dados em banco de dados NoSQL (MongoDB)
 ## Requisitos
 
 * Python [3.x](https://www.python.org/downloads/) ou mais recente.
-* MongoDB [6.0.3] (https://www.mongodb.com/try/download/community)
+* MongoDB [6.0.3](https://www.mongodb.com/try/download/community).
 
 ## Requisitos
 
