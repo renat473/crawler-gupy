@@ -1,43 +1,45 @@
+import sys
 import requests
-import csv
+from pymongo import MongoClient
+from crud import insert, update
 
+conn = MongoClient('mongodb://localhost:27017')
+db = conn.gupy
+coll = db.vagas
 
-publishedDate  = '2023-01-13'
-badges         = 'Brasil'
+def jobRequest(jobName, badges, publishedDate, offset, limit):
+    url = f'https://portal.api.gupy.io/api/job?name={jobName}&badges={badges}&isRemoteWork=true&publishedDate={publishedDate}&offset={offset}&limit={limit}'
+    return requests.request("GET", url).json()
 
+def setData(dc, ri={}):
+    dc['_id'] = dc['id']
+    del dc['id']
+    ri['_id'] = dc['_id']
+    return dc, ri
 
-url = "https://portal.api.gupy.io/api/job?name=sre&badges={badges}&isRemoteWork=true&publishedDate={publishedDate}&offset=0&limit=100"
+def closingSession():
+    print("Concluído")
 
-payload={}
-headers = {}
+def main(offset=0, jobName='rpa'):
+    publishedDate = '2024-01-01'
+    badges = 'Brasil'
+    limit = 10
 
-response = requests.request("GET", url, headers=headers, data=payload)
-
-dados = response.json()
-
-
-with open('jobs.csv', 'a+', newline='', encoding='utf-8') as csvfile:
+    dados = {}
+    dados = jobRequest(jobName, badges, publishedDate, offset, limit)
 
     for jobs in dados['data']:
-        try:
+        jobs,jobId = setData(jobs)
+        insertResult = insert(coll, jobs)
+        if insertResult == 1:
+            update(coll, jobs, jobId)
 
-            id = jobs['id']
-            companyId = jobs['companyId']
-            name = jobs['name']
-            careerPageLogo = jobs['careerPageLogo']
-            careerPageName = jobs['careerPageName']
-            careerPageUrl = jobs['careerPageUrl']
-            city = jobs['city']
-            country = jobs['country']
-            isRemoteWork = jobs['isRemoteWork']
-            jobUrl = jobs['jobUrl']
-            publishedDate = jobs['publishedDate']
-            state = jobs['state']
-            
-            writer = csv.writer(csvfile)
-            
-            writer.writerow([id,companyId,name,careerPageLogo,careerPageName,careerPageUrl,city,country,isRemoteWork,jobUrl,publishedDate,state])
-        except:
-            print('Error ao extrair vagas')
-
-print ('Concluído --------------------------------')               
+if __name__ == '__main__':
+    param = len(sys.argv)
+    try:
+        for page in range(int(sys.argv[-1])):
+            main(page," ".join(sys.argv[1:param -1]))
+        closingSession()
+    except ValueError:
+        main(0," ".join(sys.argv[1:]))
+        closingSession()

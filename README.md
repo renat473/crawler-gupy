@@ -5,19 +5,19 @@
 
 ## Objetivos
 
-Extrair vagas de emprego atráves da API Gupy e contruir disparos de vagas em grupos de WhatsApp com API wppconnect.
+Extrair vagas de emprego atráves da API Gupy e persistir os dados para projeto de data science.
+Registrar os dados em banco de dados NoSQL (MongoDB)
 
 
 ## Requisitos
 
-* Docker [3.x](https://www.docker.com/get-started) ou mais recente.
 * Python [3.x](https://www.python.org/downloads/) ou mais recente.
+* MongoDB [6.0.3](https://www.mongodb.com/try/download/community).
 
 ## Requisitos
 
 * requests              (https://pypi.org/project/requests/)
-* google-cloud-storage (https://pypi.org/project/google-cloud-storage/)
-* python-dotenv        (https://pypi.org/project/python-dotenv/)
+* pymongo               (https://pypi.org/project/pymongo/)
 
 ##### Exemplo de request vagas (parâmetros)
 
@@ -41,7 +41,7 @@ print(response.text)
 ```
 
 ##### Resposta Http Request
-```javascript
+```json
 {
 "data": [
         {
@@ -65,5 +65,6 @@ print(response.text)
             },
             "careerPageUrl": "https://segfy.gupy.io/eyJzb3VyY2UiOiJndXB5X3BvcnRhbCJ9"
         }
+]
 }
 ```
